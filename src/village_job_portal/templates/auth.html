@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Signup | Village Job Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="page-shell auth-shell">
+        <header class="topbar topbar-linkedin">
+            <a href="/" class="brand-mark">
+                <span class="brand-icon">VG</span>
+                <span>
+                    <strong>Village Job Portal</strong>
+                    <small>User Authentication | यूजर ऑथेंटिकेशन</small>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Primary">
+                <a href="/" class="top-nav-link">Home <span>होम</span></a>
+                <a href="/#directory" class="top-nav-link">Workers <span>वर्कर</span></a>
+                <a href="/auth?mode=signup" class="top-nav-link">Signup <span>साइनअप</span></a>
+            </nav>
+        </header>
+
+        <section class="auth-grid">
+            <article class="card auth-card">
+                <div class="card-head">
+                    <p class="eyebrow">Login</p>
+                    <h2>अपने अकाउंट में लॉगिन करें</h2>
+                </div>
+                <form method="post" action="/auth/login" class="stack-form">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" required>
+                    </label>
+                    <label>
+                        <span>Password</span>
+                        <input type="password" name="password" required>
+                    </label>
+                    <button type="submit">Login</button>
+                </form>
+                <p class="helper-text">Admin demo: admin@vjp.local / admin123</p>
+            </article>
+
+            <article class="card auth-card accent-card">
+                <div class="card-head">
+                    <p class="eyebrow">Signup</p>
+                    <h2>नया अकाउंट बनाएं</h2>
+                </div>
+                <form method="post" action="/auth/signup" class="stack-form">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <label>
+                        <span>पूरा नाम</span>
+                        <input type="text" name="full_name" required>
+                    </label>
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" required>
+                    </label>
+                    <label>
+                        <span>फोन</span>
+                        <input type="text" name="phone">
+                    </label>
+                    <label>
+                        <span>Password</span>
+                        <input type="password" name="password" required>
+                    </label>
+                    <button type="submit">Signup</button>
+                </form>
+
+                <div class="google-center-wrap">
+                    {% if google_oauth_configured %}
+                    <a href="/auth/google/login?next={{ next|urlencode }}" class="google-btn">Continue with Google</a>
+                    <p class="helper-text center-text">Google OAuth active hai. Direct signup/login hoga.</p>
+                    {% else %}
+                    <form method="post" action="/auth/google-signup" class="google-one-tap-form">
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <button type="submit" class="google-btn">Continue with Google</button>
+                    </form>
+                    <p class="helper-text center-text">One-click demo mode active hai, details fill karne ki zaroorat nahi.</p>
+                    {% endif %}
+                </div>
+            </article>
+        </section>
+
+        {% if message %}
+        <section class="result-box warm">
+            <p class="result-title">Message</p>
+            <p>{{ message }}</p>
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

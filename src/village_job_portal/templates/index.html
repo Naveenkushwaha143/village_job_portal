@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Village Job Portal - Gaon Seva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="topbar topbar-linkedin">
+            <a href="/" class="brand-mark">
+                <span class="brand-icon">VG</span>
+                <span>
+                    <strong>Village Job Portal</strong>
+                    <small>Rural Talent Network | गांव का जॉब नेटवर्क</small>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Primary">
+                <a href="/#hero" class="top-nav-link">Home <span>होम</span></a>
+                <a href="/#directory" class="top-nav-link">Workers <span>वर्कर</span></a>
+                <a href="/#skills" class="top-nav-link">Skills <span>स्किल्स</span></a>
+            </nav>
+            <div class="topbar-actions">
+                <span class="user-pill">{{ worker_count }} Active Profiles</span>
+                {% if current_user %}
+                <span class="user-pill">{{ current_user.full_name }} ({{ current_user.role }})</span>
+                {% if current_user.role == 'admin' %}
+                <a href="/admin/dashboard" class="top-link">Admin Dashboard</a>
+                {% endif %}
+                <form method="post" action="/auth/logout" class="inline-form">
+                    <button type="submit" class="small-btn">Logout</button>
+                </form>
+                {% else %}
+                <a href="/auth?mode=login" class="top-link">Login</a>
+                <a href="/auth?mode=signup" class="top-link">Signup</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <section class="hero-card" id="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">गांव का प्रोफेशनल स्किल नेटवर्क</p>
+                <h1 class="hero-title">काम चाहिए या कामगार चाहिए? एक SMS में बुकिंग कीजिए।</h1>
+                <p class="hero-text">
+                    ट्रैक्टर खराब हो, दीवार बनवानी हो, पाइप ठीक करवानी हो या खेत के लिए मजदूर चाहिए हों,
+                    अब गांव के भरोसेमंद कामगारों को तुरंत खोजें, प्रोफाइल देखें और फोटो के साथ रजिस्टर करें।
+                </p>
+                <div class="pill-row" id="skills">
+                    {% for skill in skills %}
+                    <a class="skill-pill skill-pill-link" href="/?skill={{ skill|urlencode }}#directory">{{ skill }} | {{ skill_hi_map.get(skill, skill) }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="pro-strip">
+            <article class="pro-tile">
+                <p class="pro-kicker">FAST MATCH</p>
+                <h3>2-Minute Worker Discovery</h3>
+                <p>Skill + village intelligence se relevant workers top par milte hain.</p>
+            </article>
+            <article class="pro-tile">
+                <p class="pro-kicker">TRUST LAYER</p>
+                <h3>Verified Work Timeline</h3>
+                <p>हर प्रोफाइल में recent history, rates aur booking owner visibility.</p>
+            </article>
+            <article class="pro-tile">
+                <p class="pro-kicker">DUAL REACH</p>
+                <h3>WhatsApp + Phone SMS</h3>
+                <p>एक क्लिक में worker ko WhatsApp aur SMS dono channels par ping.</p>
+            </article>
+        </section>
+
+        <section class="grid-layout">
+            <article class="card">
+                <div class="card-head">
+                    <p class="eyebrow">बुकिंग और SMS</p>
+                    <h2>SMS लिखकर कामगार खोजें</h2>
+                </div>
+                <form method="post" action="/search" enctype="multipart/form-data" class="stack-form">
+                    <label>
+                        <span>भेजने वाला नंबर</span>
+                        <input type="text" name="from_phone" value="9876500000" required>
+                    </label>
+                    <label>
+                        <span>SMS संदेश</span>
+                        <textarea name="message" rows="4" required placeholder="Need Tractor Mechanic in Phulaut"></textarea>
+                    </label>
+                    <label>
+                        <span>बुकिंग करने वाले की प्रोफाइल इमेज (ऑप्शनल)</span>
+                        <input type="file" name="booking_image" accept="image/png,image/jpeg,image/webp">
+                    </label>
+                    <button type="submit">बुकिंग भेजें</button>
+                </form>
+                {% if search_result %}
+                <div class="result-box success">
+                    <p class="result-title">SMS जवाब</p>
+                    <p>{{ search_result }}</p>
+                </div>
+                {% endif %}
+            </article>
+
+            <article class="card accent-card">
+                <div class="card-head">
+                    <p class="eyebrow">वर्कर ऑनबोर्डिंग</p>
+                    <h2>वर्कर प्रोफाइल के साथ रजिस्ट्रेशन</h2>
+                </div>
+                <form method="post" action="/register" enctype="multipart/form-data" class="stack-form">
+                    <label>
+                        <span>नाम</span>
+                        <input type="text" name="name" placeholder="Sita Devi" required>
+                    </label>
+                    <label>
+                        <span>फोन नंबर</span>
+                        <input type="text" name="phone" placeholder="9990000001" required>
+                    </label>
+                    <label>
+                        <span>स्किल</span>
+                        <input type="text" name="skill" placeholder="Plumber" required>
+                    </label>
+                    <label>
+                        <span>गांव</span>
+                        <input type="text" name="village" placeholder="Phulaut" required>
+                    </label>
+                    <div class="two-col-fields">
+                        <label>
+                            <span>उम्र</span>
+                            <input type="number" name="age" min="18" max="80" value="28" required>
+                        </label>
+                        <label>
+                            <span>फोटो/लोगो URL</span>
+                            <input type="url" name="image_url" placeholder="https://example.com/photo.jpg">
+                        </label>
+                    </div>
+                    <label>
+                        <span>फोटो/लोगो अपलोड करें (URL से ऊपर प्राथमिकता)</span>
+                        <input type="file" name="profile_image" accept="image/png,image/jpeg,image/webp">
+                    </label>
+                    <div class="two-col-fields">
+                        <label>
+                            <span>प्रति घंटा रेट (Rs)</span>
+                            <input type="number" step="0.01" name="hourly_rate" value="120" required>
+                        </label>
+                        <label>
+                            <span>प्रति दिन रेट (Rs)</span>
+                            <input type="number" step="0.01" name="daily_rate" value="850" required>
+                        </label>
+                    </div>
+                    <div class="two-col-fields">
+                        <label>
+                            <span>स्टेटस</span>
+                            <select name="availability_status">
+                                <option value="free">🟢 Free</option>
+                                <option value="working">🔴 Working</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>फ्री कब होगा</span>
+                            <input type="text" name="next_free_at" placeholder="आज 19:00 बजे">
+                        </label>
+                    </div>
+                    <div class="two-col-fields">
+                        <label>
+                            <span>वर्किंग शुरू समय</span>
+                            <input type="text" name="working_start_time" value="09:00" required>
+                        </label>
+                        <label>
+                            <span>वर्किंग खत्म समय</span>
+                            <input type="text" name="working_end_time" value="18:00" required>
+                        </label>
+                    </div>
+                    <button type="submit">वर्कर रजिस्टर करें</button>
+                </form>
+                {% if register_result %}
+                <div class="result-box warm">
+                    <p class="result-title">रजिस्ट्रेशन स्थिति</p>
+                    <p>{{ register_result }}</p>
+                </div>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="footer-strip">
+            <div>
+                <p class="eyebrow">API एंडपॉइंट</p>
+                <p>POST /api/sms और POST /api/register मोबाइल ऐप या SMS गेटवे से जोड़ने के लिए तैयार हैं।</p>
+            </div>
+            {% if sms_preview %}
+            <div class="preview-block">
+                <p class="panel-label">जनरेटेड SMS पेलोड</p>
+                <p>नंबर: {{ sms_preview.from_phone }}</p>
+                <p>मैसेज: {{ sms_preview.message }}</p>
+                {% if sms_preview.image_url %}
+                <img src="{{ sms_preview.image_url }}" alt="Uploaded profile" class="preview-image">
+                {% endif %}
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="directory-section" id="directory">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">वर्कर डायरेक्टरी</p>
+                    <h2>हर एक्टिव वर्कर की अलग प्रोफाइल</h2>
+                </div>
+                <p class="section-copy">हर प्रोफाइल में उम्र, नंबर, स्किल, प्रति घंटा रेट, प्रति दिन रेट और पिछले 2 महीने की हिस्ट्री दिखेगी।</p>
+            </div>
+            <form method="get" action="/" class="filter-bar">
+                <label>
+                    <span>स्किल</span>
+                    <select name="skill">
+                        <option value="">सभी स्किल</option>
+                        {% for skill in skills %}
+                        <option value="{{ skill }}" {% if filters.skill == skill %}selected{% endif %}>{{ skill }} | {{ skill_hi_map.get(skill, skill) }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>गांव</span>
+                    <input type="text" name="village" value="{{ filters.village }}" placeholder="जैसे Phulaut">
+                </label>
+                <label>
+                    <span>कम से कम रेटिंग</span>
+                    <input type="number" step="0.1" min="0" max="5" name="min_rating" value="{{ filters.min_rating }}" placeholder="4.5">
+                </label>
+                <label>
+                    <span>अधिकतम प्रति घंटा रेट</span>
+                    <input type="number" step="0.01" min="0" name="max_hourly_rate" value="{{ filters.max_hourly_rate }}" placeholder="200">
+                </label>
+                <div class="filter-actions">
+                    <button type="submit">फ़िल्टर लागू करें</button>
+                    <a href="/" class="reset-link">रीसेट</a>
+                </div>
+            </form>
+            <div class="worker-grid">
+                {% if not workers %}
+                <div class="result-box warm filter-empty">
+                    <p class="result-title">कोई वर्कर नहीं मिला</p>
+                    <p>फ़िल्टर बदलकर दोबारा कोशिश करें।</p>
+                </div>
+                {% endif %}
+                {% for worker in workers %}
+                <article class="worker-card">
+                    <div class="worker-header">
+                        {% if worker.image_url %}
+                        <img src="{{ worker.image_url }}" alt="{{ worker.name }} photo" class="worker-avatar-image">
+                        {% else %}
+                        <div class="worker-avatar-fallback">{{ worker.initials }}</div>
+                        {% endif %}
+                        <div>
+                            <h3>{{ worker.name }}</h3>
+                            <p>{{ worker.skill_label }} | {{ worker.village }}</p>
+                        </div>
+                    </div>
+                    <div class="worker-meta-row">
+                        <span class="status-pill status-{{ 'free' if worker.available == 1 else 'working' }}">{{ worker.status_symbol }} {{ worker.status_text_hi }}</span>
+                        <span>उम्र {{ worker.age }}</span>
+                        <span>{{ worker.phone }}</span>
+                    </div>
+                    <div class="worker-time-row">
+                        <span>वर्किंग समय: {{ worker.working_time_label }}</span>
+                        <span>फ्री होगा: {{ worker.next_free_display }}</span>
+                    </div>
+                    {% if worker.booking_info %}
+                    <div class="booking-info-box">
+                        <p>बुक किया: {{ worker.booking_info.booked_by_name }} ({{ worker.booking_info.booked_by_phone }})</p>
+                        <p>समय: {{ worker.booking_info.created_at }}</p>
+                        <p>स्टेटस: {{ worker.booking_info.status }} | प्रोग्रेस: {{ worker.booking_info.progress_percent }}%</p>
+                        {% if worker.booking_info.progress_note %}
+                        <p>काम कहाँ तक पहुँचा: {{ worker.booking_info.progress_note }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="worker-rate-grid">
+                        <div>
+                            <strong>Rs {{ "%.0f"|format(worker.hourly_rate) }}</strong>
+                            <span>प्रति घंटा</span>
+                        </div>
+                        <div>
+                            <strong>Rs {{ "%.0f"|format(worker.daily_rate) }}</strong>
+                            <span>प्रति दिन</span>
+                        </div>
+                        <div>
+                            <strong>{{ "%.1f"|format(worker.rating) }}</strong>
+                            <span>रेटिंग</span>
+                        </div>
+                        <div>
+                            <strong>{{ worker.jobs_completed }}</strong>
+                            <span>पूर्ण काम</span>
+                        </div>
+                    </div>
+                    <a href="/workers/{{ worker.phone }}" class="profile-link">पूरा प्रोफाइल देखें</a>
+                    <div class="action-row">
+                        <a href="{{ worker.call_url }}" class="action-chip action-call">Call</a>
+                        <a href="{{ worker.whatsapp_call_url }}" class="action-chip action-wa" target="_blank" rel="noopener">WhatsApp Call</a>
+                        <a href="{{ worker.whatsapp_message_url }}" class="action-chip action-wa" target="_blank" rel="noopener">WhatsApp Msg</a>
+                        <a href="{{ worker.sms_message_url }}" class="action-chip action-sms">Phone SMS</a>
+                        <a href="{{ worker.sms_message_url }}" class="action-chip action-dual" onclick='return notifyWorker({{ worker.whatsapp_message_url|tojson }}, {{ worker.sms_message_url|tojson }})'>Quick Notify</a>
+                    </div>
+                    {% if current_user %}
+                    <form method="post" action="/book/{{ worker.phone }}" class="booking-form">
+                        <input type="text" name="notes" placeholder="बुकिंग नोट (जैसे: कल सुबह ट्रैक्टर देखना)">
+                        <button type="submit" class="small-btn">अब Book करें</button>
+                    </form>
+                    {% else %}
+                    <a href="/auth?mode=login&next=/workers/{{ worker.phone }}" class="profile-link">बुक करने के लिए Login करें</a>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+    <script>
+        function notifyWorker(whatsappUrl, smsUrl) {
+            if (whatsappUrl) {
+                window.open(whatsappUrl, "_blank", "noopener");
+            }
+            if (smsUrl) {
+                setTimeout(function () {
+                    window.location.href = smsUrl;
+                }, 200);
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

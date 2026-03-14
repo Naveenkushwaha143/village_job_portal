@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.name }} | Village Job Portal प्रोफाइल</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="page-shell page-shell-profile">
+        <header class="topbar topbar-linkedin">
+            <a href="/" class="brand-mark">
+                <span class="brand-icon">VG</span>
+                <span>
+                    <strong>Village Job Portal</strong>
+                    <small>Worker Profile | वर्कर प्रोफाइल</small>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Primary">
+                <a href="/" class="top-nav-link">Home <span>होम</span></a>
+                <a href="/#directory" class="top-nav-link">Workers <span>वर्कर</span></a>
+                <a href="/auth?mode=signup" class="top-nav-link">Join <span>जुड़ें</span></a>
+            </nav>
+            <div class="topbar-actions">
+                {% if current_user %}
+                <span class="user-pill">{{ current_user.full_name }}</span>
+                <form method="post" action="/auth/logout" class="inline-form">
+                    <button type="submit" class="small-btn">Logout</button>
+                </form>
+                {% else %}
+                <a href="/auth?mode=login&next=/workers/{{ profile.phone }}" class="top-link">Login</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <section class="profile-hero">
+            <div class="profile-main-card">
+                <div class="profile-intro">
+                    {% if profile.image_url %}
+                    <img src="{{ profile.image_url }}" alt="{{ profile.name }} photo" class="profile-image-large">
+                    {% else %}
+                    <div class="profile-avatar-large">{{ profile.initials }}</div>
+                    {% endif %}
+                    <div>
+                        <p class="eyebrow">वर्कर प्रोफाइल</p>
+                        <h1 class="profile-title">{{ profile.name }}</h1>
+                        <p class="profile-subtitle">{{ profile.skill_label }} | {{ profile.village }}</p>
+                        <p class="profile-number">फोन: {{ profile.phone }}</p>
+                    </div>
+                </div>
+                <div class="profile-chip-row">
+                    <span class="skill-pill status-{{ 'free' if profile.available == 1 else 'working' }}">{{ profile.status_symbol }} {{ profile.status_text_hi }}</span>
+                    <span class="skill-pill">उम्र {{ profile.age }}</span>
+                    <span class="skill-pill">रेटिंग {{ "%.1f"|format(profile.rating) }}</span>
+                    <span class="skill-pill">{{ profile.jobs_completed }} काम पूरे</span>
+                </div>
+                <div class="worker-time-row profile-time-row">
+                    <span>वर्किंग समय: {{ profile.working_time_label }}</span>
+                    <span>फ्री होगा: {{ profile.next_free_display }}</span>
+                </div>
+                <div class="action-row action-row-profile">
+                    <a href="{{ profile.call_url }}" class="action-chip action-call">Call</a>
+                    <a href="{{ profile.whatsapp_call_url }}" class="action-chip action-wa" target="_blank" rel="noopener">WhatsApp Call</a>
+                    <a href="{{ profile.whatsapp_message_url }}" class="action-chip action-wa" target="_blank" rel="noopener">WhatsApp Message</a>
+                    <a href="{{ profile.sms_message_url }}" class="action-chip action-sms">Phone SMS</a>
+                    <a href="{{ profile.sms_message_url }}" class="action-chip action-dual" onclick='return notifyWorker({{ profile.whatsapp_message_url|tojson }}, {{ profile.sms_message_url|tojson }})'>Quick Notify</a>
+                </div>
+                {% if profile.booking_info %}
+                <div class="booking-info-box profile-booking-box">
+                    <p>बुक किया: {{ profile.booking_info.booked_by_name }} ({{ profile.booking_info.booked_by_phone }})</p>
+                    <p>समय: {{ profile.booking_info.created_at }}</p>
+                    <p>स्टेटस: {{ profile.booking_info.status }} | प्रोग्रेस: {{ profile.booking_info.progress_percent }}%</p>
+                    {% if profile.booking_info.progress_note %}
+                    <p>काम कहाँ तक पहुँचा: {{ profile.booking_info.progress_note }}</p>
+                    {% endif %}
+                    {% if profile.booking_info.notes %}
+                    <p>नोट: {{ profile.booking_info.notes }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% if booked %}
+                <div class="result-box success">
+                    <p class="result-title">बुकिंग कन्फर्म</p>
+                    <p>वर्कर सफलतापूर्वक बुक हो गया है।</p>
+                </div>
+                {% endif %}
+                {% if current_user %}
+                <form method="post" action="/book/{{ profile.phone }}" class="booking-form profile-booking-form">
+                    <input type="text" name="notes" placeholder="बुकिंग नोट लिखें">
+                    <button type="submit" class="small-btn">इस वर्कर को Book करें</button>
+                </form>
+                {% else %}
+                <a href="/auth?mode=login&next=/workers/{{ profile.phone }}" class="profile-link">बुक करने के लिए Login करें</a>
+                {% endif %}
+            </div>
+
+            <aside class="profile-summary-card">
+                <p class="eyebrow">रेट और हाल का काम</p>
+                <div class="summary-metric-list">
+                    <div>
+                        <strong>Rs {{ "%.0f"|format(profile.hourly_rate) }}</strong>
+                        <span>प्रति घंटा रेट</span>
+                    </div>
+                    <div>
+                        <strong>Rs {{ "%.0f"|format(profile.daily_rate) }}</strong>
+                        <span>प्रति दिन रेट</span>
+                    </div>
+                    <div>
+                        <strong>{{ profile.last_two_month_jobs }}</strong>
+                        <span>पिछले 2 महीनों में काम</span>
+                    </div>
+                    <div>
+                        <strong>Rs {{ "%.0f"|format(profile.last_two_month_earnings) }}</strong>
+                        <span>पिछले 2 महीनों में कुल कमाई</span>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="history-card">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">वर्किंग हिस्ट्री</p>
+                    <h2>पिछले 2 महीनों की गतिविधि</h2>
+                </div>
+                <p class="section-copy">घंटे, काम का प्रकार, गांव और कमाई की जानकारी भरोसा बनाने के लिए दिखती है।</p>
+            </div>
+
+            {% if profile.recent_history %}
+            <div class="history-timeline">
+                {% for item in profile.recent_history %}
+                <article class="history-item">
+                    <div class="history-date">{{ item.work_date }}</div>
+                    <div class="history-content">
+                        <h3>{{ item.job_title }}</h3>
+                        <p>{{ item.client_name }} | {{ item.village }}</p>
+                        <div class="history-stats">
+                            <span>{{ "%.1f"|format(item.hours_worked) }} hours</span>
+                            <span>{{ "%.1f"|format(item.days_worked) }} दिन</span>
+                            <span>Rs {{ "%.0f"|format(item.total_earned) }}</span>
+                        </div>
+                        {% if item.notes %}
+                        <p class="history-note">{{ item.notes }}</p>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="result-box warm">
+                <p class="result-title">हाल की हिस्ट्री उपलब्ध नहीं</p>
+                <p>वर्कर रजिस्टर्ड है, लेकिन पिछले 2 महीनों का रिकॉर्ड अभी उपलब्ध नहीं है।</p>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+    <script>
+        function notifyWorker(whatsappUrl, smsUrl) {
+            if (whatsappUrl) {
+                window.open(whatsappUrl, "_blank", "noopener");
+            }
+            if (smsUrl) {
+                setTimeout(function () {
+                    window.location.href = smsUrl;
+                }, 200);
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

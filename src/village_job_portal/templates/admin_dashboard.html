@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Village Job Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <main class="page-shell">
+        <header class="topbar topbar-linkedin">
+            <a href="/" class="brand-mark">
+                <span class="brand-icon">VG</span>
+                <span>
+                    <strong>Village Job Portal</strong>
+                    <small>Admin Dashboard | एडमिन डैशबोर्ड</small>
+                </span>
+            </a>
+            <nav class="topbar-nav" aria-label="Primary">
+                <a href="/" class="top-nav-link">Home <span>होम</span></a>
+                <a href="/#directory" class="top-nav-link">Workers <span>वर्कर</span></a>
+                <a href="/admin/dashboard" class="top-nav-link">Dashboard <span>डैशबोर्ड</span></a>
+            </nav>
+            <div class="topbar-actions">
+                <span class="user-pill">{{ current_user.full_name }} (Admin)</span>
+                <form method="post" action="/auth/logout" class="inline-form">
+                    <button type="submit" class="small-btn">Logout</button>
+                </form>
+            </div>
+        </header>
+
+        <section class="card">
+            <div class="card-head">
+                <p class="eyebrow">बुकिंग कंट्रोल</p>
+                <h2>Recent Bookings</h2>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Worker</th>
+                            <th>Skill</th>
+                            <th>Village</th>
+                            <th>Booked By</th>
+                            <th>Phone</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Notes</th>
+                            <th>काम कहाँ तक पहुँचा</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.worker_name or booking.worker_phone }}</td>
+                            <td>{{ booking.skill_label or '-' }}</td>
+                            <td>{{ booking.village or '-' }}</td>
+                            <td>{{ booking.booked_by_name }}</td>
+                            <td>{{ booking.booked_by_phone }}</td>
+                            <td>{{ booking.created_at }}</td>
+                            <td>{{ booking.status }}</td>
+                            <td>{{ booking.progress_percent }}%</td>
+                            <td>{{ booking.notes }}</td>
+                            <td>
+                                <form method="post" action="/admin/bookings/{{ booking.id }}/progress" class="booking-progress-form">
+                                    <select name="status">
+                                        <option value="booked" {% if booking.status == 'booked' %}selected{% endif %}>booked</option>
+                                        <option value="in_progress" {% if booking.status == 'in_progress' %}selected{% endif %}>in_progress</option>
+                                        <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>completed</option>
+                                        <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>cancelled</option>
+                                    </select>
+                                    <input type="number" name="progress_percent" min="0" max="100" value="{{ booking.progress_percent }}" required>
+                                    <input type="text" name="progress_note" value="{{ booking.progress_note }}" placeholder="काम अपडेट">
+                                    <button type="submit" class="small-btn">अपडेट</button>
+                                </form>
+                                <small>अपडेट: {{ booking.updated_at }}</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card admin-workers-card">
+            <div class="card-head">
+                <p class="eyebrow">वर्कर स्टेटस</p>
+                <h2>Workers Availability Snapshot</h2>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Working Time</th>
+                            <th>Next Free</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for worker in workers %}
+                        <tr>
+                            <td>{{ worker.name }}</td>
+                            <td>{{ worker.phone }}</td>
+                            <td>{{ worker.status_symbol }} {{ worker.status_text_hi }}</td>
+                            <td>{{ worker.working_time_label }}</td>
+                            <td>{{ worker.next_free_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

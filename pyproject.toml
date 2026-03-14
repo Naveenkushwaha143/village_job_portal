@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "village-job-portal"
+version = "0.1.0"
+description = "SMS-based skill and labor directory for rural communities"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+	"fastapi>=0.115,<1.0",
+	"jinja2>=3.1,<4.0",
+	"python-multipart>=0.0.9,<1.0",
+	"uvicorn>=0.30,<1.0",
+	"httpx>=0.27,<1.0",
+]
+
+[project.scripts]
+village-job-portal = "village_job_portal.cli:main"
+village-job-portal-web = "village_job_portal.app:run"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

@@ -1,0 +1,51 @@
+INSERT OR IGNORE INTO workers (
+    name,
+    phone,
+    skill_slug,
+    skill_label,
+    village,
+    village_tag,
+    location_tag,
+    age,
+    image_url,
+    hourly_rate,
+    daily_rate,
+    available,
+    working_start_time,
+    working_end_time,
+    next_free_at,
+    jobs_completed,
+    rating
+) VALUES
+    ('Ramesh Yadav', '9000000001', 'tractor_mechanic', 'Tractor Mechanic', 'Phulaut', 'phulaut', 'phulaut', 34, '', 220.0, 1500.0, 1, '08:00', '18:00', 'अभी उपलब्ध', 86, 4.8),
+    ('Iqbal Khan', '9000000002', 'tractor_mechanic', 'Tractor Mechanic', 'Phulaut', 'phulaut', 'phulaut', 31, '', 200.0, 1400.0, 0, '09:00', '19:00', 'आज 19:00 बजे', 64, 4.6),
+    ('Sohan Lal', '9000000003', 'tractor_mechanic', 'Tractor Mechanic', 'Bhagalpur', 'bhagalpur', 'bhagalpur', 39, '', 240.0, 1650.0, 1, '09:00', '18:00', 'अभी उपलब्ध', 92, 4.9),
+    ('Meena Devi', '9000000004', 'mason', 'Mason', 'Phulaut', 'phulaut', 'phulaut', 29, '', 180.0, 1200.0, 1, '08:30', '17:30', 'अभी उपलब्ध', 71, 4.7),
+    ('Pintu Raj', '9000000005', 'mason', 'Mason', 'Chandpur', 'chandpur', 'chandpur', 27, '', 170.0, 1100.0, 1, '08:00', '17:00', 'अभी उपलब्ध', 39, 4.3),
+    ('Sunil Paswan', '9000000006', 'farm_labor', 'Farm Labor', 'Phulaut', 'phulaut', 'phulaut', 32, '', 95.0, 650.0, 0, '06:00', '16:00', 'आज 16:00 बजे', 108, 4.5),
+    ('Kavita Kumari', '9000000007', 'farm_labor', 'Farm Labor', 'Phulaut', 'phulaut', 'phulaut', 26, '', 90.0, 620.0, 1, '06:30', '15:30', 'अभी उपलब्ध', 95, 4.4),
+    ('Hari Om', '9000000008', 'plumber', 'Plumber', 'Bhagalpur', 'bhagalpur', 'bhagalpur', 36, '', 210.0, 1450.0, 1, '09:30', '18:30', 'अभी उपलब्ध', 52, 4.6),
+    ('Deepak Verma', '9000000009', 'electrician', 'Electrician', 'Phulaut', 'phulaut', 'phulaut', 30, '', 230.0, 1600.0, 0, '10:00', '20:00', 'आज 20:00 बजे', 66, 4.7),
+    ('Lalan Singh', '9000000010', 'welder', 'Welder', 'Nandgaon', 'nandgaon', 'nandgaon', 35, '', 250.0, 1750.0, 1, '10:00', '19:00', 'अभी उपलब्ध', 47, 4.2);
+
+INSERT OR IGNORE INTO work_history (
+    worker_id,
+    work_date,
+    client_name,
+    job_title,
+    hours_worked,
+    days_worked,
+    total_earned,
+    village,
+    notes
+) VALUES
+    ((SELECT id FROM workers WHERE phone = '9000000001'), date('now', '-6 day'), 'Mahesh Patel', 'Hydraulic line repair', 7.0, 1.0, 1540.0, 'Phulaut', 'Emergency field call'),
+    ((SELECT id FROM workers WHERE phone = '9000000001'), date('now', '-18 day'), 'Ritu Singh', 'Tractor clutch fitting', 8.0, 1.0, 1760.0, 'Phulaut', 'Workshop job'),
+    ((SELECT id FROM workers WHERE phone = '9000000001'), date('now', '-41 day'), 'Keshav Rai', 'Engine tune-up', 5.0, 1.0, 1100.0, 'Bhagalpur', 'Seasonal maintenance'),
+    ((SELECT id FROM workers WHERE phone = '9000000004'), date('now', '-8 day'), 'Anoop Verma', 'Boundary wall masonry', 8.0, 2.0, 2400.0, 'Phulaut', 'Brick and plaster work'),
+    ((SELECT id FROM workers WHERE phone = '9000000004'), date('now', '-27 day'), 'Kamla Devi', 'Room repair', 6.0, 1.0, 1080.0, 'Phulaut', 'Kitchen wall patching'),
+    ((SELECT id FROM workers WHERE phone = '9000000008'), date('now', '-9 day'), 'Nasim Ali', 'Motor pipe repair', 4.0, 1.0, 840.0, 'Bhagalpur', 'Water line leak'),
+    ((SELECT id FROM workers WHERE phone = '9000000008'), date('now', '-35 day'), 'Suresh Das', 'Bathroom fitting', 8.0, 1.0, 1680.0, 'Bhagalpur', 'Tap and outlet replacement'),
+    ((SELECT id FROM workers WHERE phone = '9000000009'), date('now', '-12 day'), 'Seema Jha', 'House wiring check', 5.0, 1.0, 1150.0, 'Phulaut', 'Load issue resolved'),
+    ((SELECT id FROM workers WHERE phone = '9000000006'), date('now', '-3 day'), 'Farmer Producer Group', 'Harvest support', 9.0, 1.0, 855.0, 'Phulaut', 'Wheat cutting team support'),
+    ((SELECT id FROM workers WHERE phone = '9000000006'), date('now', '-22 day'), 'Ramlal Yadav', 'Field clearing', 8.0, 1.0, 760.0, 'Phulaut', 'Pre-sowing field preparation');
