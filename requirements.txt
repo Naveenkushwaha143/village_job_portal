@@ -1,0 +1,9 @@
+# Village Job Portal — Python dependencies
+
+# No third-party packages are required for the core SMS engine.
+# The system uses Python's built-in sqlite3 and re modules.
+#
+# Optional / recommended for production deployment:
+# flask>=3.0          # HTTP webhook endpoint for Twilio / MSG91 callbacks
+# twilio>=8.0         # Twilio SMS SDK (send real SMS replies)
+# pytest>=8.0         # Test runner (install for running the test suite)
